@@ -12,6 +12,7 @@ import Radio from '@mui/material/Radio'
 import RadioGroup from '@mui/material/RadioGroup'
 import Grid from '@mui/material/Grid'
 import Slider from '@mui/material/Slider'
+import {Button} from '@mui/material'
 import {
   Container,
   Main,
@@ -22,7 +23,6 @@ import {
   KTime,
   Right,
   Card,
-  MyButton,
 } from './style'
 import { useNavigate } from 'react-router-dom'
 import { calculate } from './calc-factory'
@@ -323,7 +323,7 @@ const Calculator = () => {
     let paymentList = []
 
 
-    while (--duration > 0) {
+    while (--duration >= 0) {
       if (paymentType === 'anuited' || paymentType === undefined) {
         let monthlyAmount = tatalCreditAbount * (loanPercentage / (duration * 100) + loanPercentage / (duration * 100) / (Math.pow(1 + loanPercentage / (duration * 100), duration) - 1));
         let qarz = monthlyAmount - tatalCreditAbount * (loanPercentage / (duration * 100));
@@ -353,7 +353,7 @@ const Calculator = () => {
         tatalCreditAbount -= monthlyAmount - foiz
       }
     }
-    
+
     localStorage.setItem('paymentList', JSON.stringify(paymentList))
   }
 
@@ -532,14 +532,18 @@ const Calculator = () => {
             <Card.Description>To'liq foizli to'lov</Card.Description>
             <Card.Pay>{Math.round(monthPaymentSumm * time)} so'm</Card.Pay>
             <Card.Description>Umumiy kredt miqdori</Card.Description>
-            <MyButton
+            <br/>
+            <Button
+            size='large'
+            color="info"
+            variant="contained"
               onClick={() => {
                 getListOfPayement(summ, pay, select, time, swch)
                 navigate(swch.anuited ? `/annuited__table` : `/differ__table`)
               }}
             >
               To'lov tartibi
-            </MyButton>
+            </Button>
           </Card>
         </Right>
       </Main>

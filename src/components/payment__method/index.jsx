@@ -1,4 +1,6 @@
 import React, { useState } from 'react'
+import XLSX from 'xlsx';
+
 import { styled } from '@mui/material/styles';
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
@@ -7,11 +9,13 @@ import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import Paper from '@mui/material/Paper';
+import { Button } from '@mui/material';
+import Box from '@mui/material/Box';
+import SaveIcon from '@mui/icons-material/Save';
+
 import { Container } from './style'
 
-
 const PaymentMethod = () => {
-
 
   const StyledTableCell = styled(TableCell)(({ theme }) => ({
     [`&.${tableCellClasses.head}`]: {
@@ -33,25 +37,49 @@ const PaymentMethod = () => {
     },
   }));
   
-  function createData(name, calories, fat, carbs, protein) {
-    return { name, calories, fat, carbs, protein };
-  }
   
-  const rows = [
-    createData('Frozen yoghurt', 159, 6.0, 24, 4.0),
-    createData('Ice cream sandwich', 237, 9.0, 37, 4.3),
-    createData('Eclair', 262, 16.0, 24, 6.0),
-    createData('Cupcake', 305, 3.7, 67, 4.3),
-    createData('Gingerbread', 356, 16.0, 49, 3.9),
-  ];
 
   const [ dataList, setDattaList ] = useState(JSON.parse(localStorage.getItem("paymentList")))
 
   console.log(dataList, "code");
 
+  
+  // ----------------------export Excel----------------
+
+  
+  const downloadExcel=()=>{
+  
+    const workSheet=XLSX.utils.json_to_sheet(dataList)
+    const workBook=XLSX.utils.book_new()
+    XLSX.utils.book_append_sheet(workBook,workSheet,"kredit")
+    //Buffer
+    let buf=XLSX.write(workBook,{bookType:"xlsx",type:"buffer"})
+    //Binary string
+    XLSX.write(workBook,{bookType:"xlsx",type:"binary"})
+    //Download
+    XLSX.writeFile(workBook,"Kredit_Data.xlsx")
+
+
+  }
+ 
+  // ----------------------export Excel----------------
+
+
 
   return (
     <Container>
+      <Box>
+        <Button
+          size='large'
+          color="success"
+          onClick={downloadExcel}
+          startIcon={<SaveIcon />}
+          variant="outlined"
+        >
+          Export to Excel
+        </Button>
+    </Box>
+    <br/>
         <TableContainer component={Paper}>
       <Table sx={{ minWidth: 700 }} aria-label="customized table" >
         <TableHead>

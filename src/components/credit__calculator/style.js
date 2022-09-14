@@ -1,6 +1,6 @@
 import styled from "styled-components";
 import MuiInput from '@mui/material/Input';
-import {Button} from '@mui/material'
+
 
 export const Container =  styled.div`
 display: flex;
@@ -129,11 +129,5 @@ display: flex;
 font-size: 14px;
 font-weight: 400;
 color: gray;
-
-`
-
-export const MyButton = styled(Button)`
-display: flex;
-border: 1px solid red;
 
 `
