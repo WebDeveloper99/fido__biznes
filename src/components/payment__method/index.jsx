@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { styled } from '@mui/material/styles';
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
@@ -45,6 +45,10 @@ const PaymentMethod = () => {
     createData('Gingerbread', 356, 16.0, 49, 3.9),
   ];
 
+  const [ dataList, setDattaList ] = useState(JSON.parse(localStorage.getItem("paymentList")))
+
+  console.log(dataList, "code");
+
 
   return (
     <Container>
@@ -59,16 +63,16 @@ const PaymentMethod = () => {
             <StyledTableCell align="center">To'lovning umumiy miqdori</StyledTableCell>
           </TableRow>
         </TableHead>
-        <TableBody style={{padding: '30px'}} >
-          {rows.map((row) => (
-            <StyledTableRow key={row.name}>
+        <TableBody>
+          {dataList.map((value, idx) => (
+            <StyledTableRow key={idx}>
               <StyledTableCell component="th" scope="row">
-                {row.name}
+                {idx+1}
               </StyledTableCell>
-              <StyledTableCell align="center">{row.calories}</StyledTableCell>
-              <StyledTableCell align="center">{row.fat}</StyledTableCell>
-              <StyledTableCell align="center">{row.carbs}</StyledTableCell>
-              <StyledTableCell align="center">{row.protein}</StyledTableCell>
+              <StyledTableCell align="center">{value.total}</StyledTableCell>
+              <StyledTableCell align="center">{value.qarz}</StyledTableCell>
+              <StyledTableCell align="center">{value.foiz}</StyledTableCell>
+              <StyledTableCell align="center">{value.monthlyAmount}</StyledTableCell>
             </StyledTableRow>
           ))}
         </TableBody>

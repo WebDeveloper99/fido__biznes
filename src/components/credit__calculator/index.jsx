@@ -22,13 +22,13 @@ import {
   KTime,
   Right,
   Card,
-  MyButton
+  MyButton,
 } from './style'
 import { useNavigate } from 'react-router-dom'
+import { calculate } from './calc-factory'
 
 const Calculator = () => {
-
-  const navigate = useNavigate();
+  const navigate = useNavigate()
 
   // ----------------begin Kredit selected type------------
 
@@ -51,19 +51,18 @@ const Calculator = () => {
   })
 
   const handleChangeSwitch = (event) => {
-
     if (event.target.name === 'anuited') {
       setSwch({
         anuited: true,
         differ: false,
       })
-      MonthPaymentSumm(summ, pay, select, time, event.target.name)
+      MonthPaymentSumm(summ, pay, select, time, 'anuited')
     } else {
       setSwch({
         anuited: false,
         differ: true,
       })
-      MonthPaymentSumm(summ,pay, select, time, event.target.name)
+      MonthPaymentSumm(summ, pay, select, time, 'differ')
     }
   }
 
@@ -108,11 +107,10 @@ const Calculator = () => {
 
   const handleChangeRadio = (event) => {
     console.log(event.target.value, 'pay')
-    
+
     setPay(event.target.value)
 
     MonthPaymentSumm(summ, event.target.value, select, time, swch)
-
   }
 
   // ----------------end Kredit Pay type------------
@@ -122,21 +120,20 @@ const Calculator = () => {
   const [summ, setSumm] = useState(5)
 
   const handleSliderChangeSumm = (event) => {
-    console.log(event.target.value, 'summSlider');
-    
+    console.log(event.target.value, 'summSlider')
+
     setSumm(event.target.value)
 
     MonthPaymentSumm(event.target.value, pay, select, time, swch.anuited)
-
   }
 
   const handleInputChangeSumm = (event) => {
+    console.log(event.target.value, 'summInput')
 
-    console.log(event.target.value, 'summInput');
-    
-    event.target.value !== '' && MonthPaymentSumm(event.target.value, pay, select, time, swch.anuited);
+    event.target.value !== '' &&
+      MonthPaymentSumm(event.target.value, pay, select, time, swch.anuited)
 
-    setSumm(event.target.value === '' ? '' : Number(event.target.value));
+    setSumm(event.target.value === '' ? '' : Number(event.target.value))
   }
 
   const handleBlurSumm = () => {
@@ -146,8 +143,6 @@ const Calculator = () => {
       setSumm(100)
     }
   }
-
-
 
   const marksSumm = [
     {
@@ -194,15 +189,11 @@ const Calculator = () => {
       value: 100,
       label: '100',
     },
-  ];
+  ]
 
-  
   // ----------------end Kredit Summ------------
 
-
-
   // ----------------begin Kredit Time------------
-
 
   const [time, setTime] = useState(6)
 
@@ -212,8 +203,8 @@ const Calculator = () => {
   }
 
   const handleInputChangeTime = (event) => {
-
-    event.target.value !== '' && MonthPaymentSumm(summ, pay, select, event.target.value, swch.anuited);
+    event.target.value !== '' &&
+      MonthPaymentSumm(summ, pay, select, event.target.value, swch.anuited)
 
     setTime(event.target.value === '' ? '' : Number(event.target.value))
   }
@@ -259,82 +250,124 @@ const Calculator = () => {
       value: 42,
       label: '42',
     },
-    
+
     {
       value: 48,
       label: '48 oy',
     },
-  ];
+  ]
 
   // ----------------end Kredit Time------------
 
-
-
-
-
-
   // ----------------begin Right Display func------------
 
-  const [ monthPaymentSumm, setMonthPaymentSumm ] = useState(0)
+  const [monthPaymentSumm, setMonthPaymentSumm] = useState(0)
 
-  const [ qarz, setQarz ] = useState(0)
-  const [ foiz, setFoiz ] = useState(0)
-
+  const [qarz, setQarz] = useState(0)
+  const [foiz, setFoiz] = useState(0)
 
   const MonthPaymentSumm = (summ, pay, select, time, method) => {
-
-    summ = parseFloat(summ) * 1000000;
-    pay = parseFloat(pay);
-    select = parseFloat(select);
-    time = parseInt(time);
+    summ = parseFloat(summ) * 1000000
+    pay = parseFloat(pay)
+    select = parseFloat(select)
+    time = parseInt(time)
 
     console.log(qarz, foiz)
-    console.log(method, 'method');
-    console.log(summ, 'summ');
-    console.log(pay, 'pay');
-    console.log(select, 'select');
-    console.log(time, 'time');
+    console.log(method, 'method')
+    console.log(summ, 'summ')
+    console.log(pay, 'pay')
+    console.log(select, 'select')
+    console.log(time, 'time')
 
-    summ = summ - (summ * (pay / 100))
-    
-    if(method === "anuited" || method === undefined ){
-      setMonthPaymentSumm(summ * ( (select / (time * 100)) + ((select / (time * 100)) / ( Math.pow((1 + (select / (time * 100))) , time) - 1 ))  ))
-      setQarz(monthPaymentSumm - summ * (select / (time * 100)) )
-      setFoiz(summ * (select / (time * 100)) )
+    summ = summ - summ * (pay / 100)
+    // console.log(calculate(method)())
+    if (method === 'anuited' || method === undefined) {
+      setMonthPaymentSumm(
+        summ *
+          (select / (time * 100) +
+            select /
+              (time * 100) /
+              (Math.pow(1 + select / (time * 100), time) - 1)),
+      )
+      setQarz(monthPaymentSumm - summ * (select / (time * 100)))
+      setFoiz(summ * (select / (time * 100)))
 
-      console.log(monthPaymentSumm,'A__monthPaymentSumm');
-      console.log(qarz,'A__qarz');
-      console.log(foiz,'A__foiz');
-    }else{
-      setMonthPaymentSumm((summ / time) + (summ * (select / (time * 100))))
-      setQarz(summ / time )
-      setFoiz(summ * (select / (time * 100)) )
+      console.log(monthPaymentSumm, 'A__monthPaymentSumm')
+      console.log(qarz, 'A__qarz')
+      console.log(foiz, 'A__foiz')
+    } else {
+      setMonthPaymentSumm(summ / time + summ * (select / (time * 100)))
+      setQarz(summ / time)
+      setFoiz(summ * (select / (time * 100)))
 
-      console.log(monthPaymentSumm,'D__monthPaymentSumm');
-      console.log(qarz,'D__qarz');
-      console.log(foiz,'D__foiz');
-
+      console.log(monthPaymentSumm, 'D__monthPaymentSumm')
+      console.log(qarz, 'D__qarz')
+      console.log(foiz, 'D__foiz')
     }
-
-    
-
-
-  };        
-
+  }
 
   // ----------------end Right Display func------------
 
+  const getListOfPayement = (
+    tatalCreditAbount,
+    intialPaymentPercentage,
+    loanPercentage,
+    duration,
+    paymentType,
+  ) => {
+    tatalCreditAbount = parseFloat(tatalCreditAbount) * 1000000
+    intialPaymentPercentage = parseFloat(intialPaymentPercentage)
+    loanPercentage = parseFloat(loanPercentage)
+    duration = parseInt(duration)
+
+    let paymentList = []
 
 
+    while (--duration > 0) {
+      if (paymentType === 'anuited' || paymentType === undefined) {
+        let monthlyAmount = tatalCreditAbount * (loanPercentage / (duration * 100) + loanPercentage / (duration * 100) / (Math.pow(1 + loanPercentage / (duration * 100), duration) - 1));
+        let qarz = monthlyAmount - tatalCreditAbount * (loanPercentage / (duration * 100));
+        let foiz = tatalCreditAbount * (loanPercentage / (duration * 100));
+        
+        paymentList.push({
+          total: tatalCreditAbount,
+          monthlyAmount: monthlyAmount,
+          qarz: qarz,
+          foiz: foiz,
+        })
 
+        tatalCreditAbount -= monthlyAmount - foiz
+
+      } else {
+        let monthlyAmount =  tatalCreditAbount / duration + tatalCreditAbount * (loanPercentage / (duration * 100));
+        let qarz = tatalCreditAbount / duration;
+        let foiz = tatalCreditAbount * (loanPercentage / (duration * 100));
+
+        paymentList.push({
+          total: tatalCreditAbount,
+          monthlyAmount: monthlyAmount,
+          qarz: qarz,
+          foiz: foiz,
+        })
+
+        tatalCreditAbount -= monthlyAmount - foiz
+      }
+    }
+    
+    localStorage.setItem('paymentList', JSON.stringify(paymentList))
+  }
 
   return (
     <Container>
-      <Title fs="28px" m="0 0 50px 0" >Kredit Kalkulyator</Title>
+      <Title fs="28px" m="0 0 50px 0">
+        Kredit Kalkulyator
+      </Title>
       <Main>
         <Left>
           <KType>
-            <Title fs="20px" m="0 0 20px 0" >Kredit Turi</Title>
+            <Title fs="20px" m="0 0 20px 0">
+              Kredit Turi
+            </Title>
             <KType.Method>
               <KType.SelectMethod>
                 <Box sx={{ minWidth: 320 }}>
@@ -426,9 +459,11 @@ const Calculator = () => {
             </KType.Pay>
           </KType>
           <KSumm>
-          <Title fs="20px" m="100px 0 20px 0" >Kredit Miqdori (mln)</Title>
+            <Title fs="20px" m="100px 0 20px 0">
+              Kredit Miqdori (mln)
+            </Title>
             <Box sx={{ width: 750 }}>
-              <Grid container spacing={2} alignItems="center" >
+              <Grid container spacing={2} alignItems="center">
                 <Grid item xs>
                   <Slider
                     value={typeof summ === 'number' ? summ : 5}
@@ -437,7 +472,7 @@ const Calculator = () => {
                     marks={marksSumm}
                   />
                 </Grid>
-                <Grid item >
+                <Grid item>
                   <KSumm.Input
                     value={summ}
                     onChange={handleInputChangeSumm}
@@ -455,19 +490,21 @@ const Calculator = () => {
             </Box>
           </KSumm>
           <KTime>
-          <Title fs="20px" m="100px 0 20px 0" >Kredit Muddati (oy)</Title>
-          <Box sx={{ width: 750 }}>
-              <Grid container spacing={2} alignItems="center" >
+            <Title fs="20px" m="100px 0 20px 0">
+              Kredit Muddati (oy)
+            </Title>
+            <Box sx={{ width: 750 }}>
+              <Grid container spacing={2} alignItems="center">
                 <Grid item xs>
                   <Slider
                     value={typeof time === 'number' ? time : 1}
                     onChange={handleSliderChangeTime}
                     aria-labelledby="input-slider-time"
                     marks={marksTime}
-                    max='48'
+                    max="48"
                   />
                 </Grid>
-                <Grid item >
+                <Grid item>
                   <KSumm.Input
                     value={time}
                     onChange={handleInputChangeTime}
@@ -486,17 +523,24 @@ const Calculator = () => {
           </KTime>
         </Left>
         <Right>
-            <Card>
-                <Card.Pay>{Math.round(monthPaymentSumm)} so'm</Card.Pay>
-                <Card.Description>Oylik to'lov</Card.Description>
-                <Card.Pay>{select} %</Card.Pay>
-                <Card.Description>Foiz</Card.Description>
-                <Card.Pay>{Math.round(qarz)} so'm</Card.Pay>
-                <Card.Description>To'liq foizli to'lov</Card.Description>
-                <Card.Pay>{Math.round(monthPaymentSumm * time)} so'm</Card.Pay>
-                <Card.Description>Umumiy kredt miqdori</Card.Description>
-                <MyButton onClick={() => navigate( swch.anuited ? `/annuited__table` : `/differ__table` )} >To'lov tartibi</MyButton>
-            </Card>
+          <Card>
+            <Card.Pay>{Math.round(monthPaymentSumm)} so'm</Card.Pay>
+            <Card.Description>Oylik to'lov</Card.Description>
+            <Card.Pay>{select} %</Card.Pay>
+            <Card.Description>Foiz</Card.Description>
+            <Card.Pay>{Math.round(qarz)} so'm</Card.Pay>
+            <Card.Description>To'liq foizli to'lov</Card.Description>
+            <Card.Pay>{Math.round(monthPaymentSumm * time)} so'm</Card.Pay>
+            <Card.Description>Umumiy kredt miqdori</Card.Description>
+            <MyButton
+              onClick={() => {
+                getListOfPayement(summ, pay, select, time, swch)
+                navigate(swch.anuited ? `/annuited__table` : `/differ__table`)
+              }}
+            >
+              To'lov tartibi
+            </MyButton>
+          </Card>
         </Right>
       </Main>
     </Container>
