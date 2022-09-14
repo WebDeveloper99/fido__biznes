@@ -32,7 +32,7 @@ const Calculator = () => {
 
   // ----------------begin Kredit selected type------------
 
-  const [select, setSelect] = useState()
+  const [select, setSelect] = useState(null)
 
   const handleChangeSelect = (event) => {
     console.log(event.target.value, 'select')
@@ -57,11 +57,13 @@ const Calculator = () => {
         anuited: true,
         differ: false,
       })
+      MonthPaymentSumm(summ, pay, select, time, event.target.name)
     } else {
       setSwch({
         anuited: false,
         differ: true,
       })
+      MonthPaymentSumm(summ,pay, select, time, event.target.name)
     }
   }
 
@@ -109,7 +111,7 @@ const Calculator = () => {
     
     setPay(event.target.value)
 
-    MonthPaymentSumm(summ, event.target.value, select, time)
+    MonthPaymentSumm(summ, event.target.value, select, time, swch)
 
   }
 
@@ -124,7 +126,7 @@ const Calculator = () => {
     
     setSumm(event.target.value)
 
-    MonthPaymentSumm(event.target.value, pay, select, time)
+    MonthPaymentSumm(event.target.value, pay, select, time, swch.anuited)
 
   }
 
@@ -132,7 +134,7 @@ const Calculator = () => {
 
     console.log(event.target.value, 'summInput');
     
-    event.target.value !== '' && MonthPaymentSumm(event.target.value, pay, select, time);
+    event.target.value !== '' && MonthPaymentSumm(event.target.value, pay, select, time, swch.anuited);
 
     setSumm(event.target.value === '' ? '' : Number(event.target.value));
   }
@@ -206,12 +208,12 @@ const Calculator = () => {
 
   const handleSliderChangeTime = (event, newTime) => {
     setTime(newTime)
-    MonthPaymentSumm(summ, pay, select, newTime)
+    MonthPaymentSumm(summ, pay, select, newTime, swch.anuited)
   }
 
   const handleInputChangeTime = (event) => {
 
-    event.target.value !== '' && MonthPaymentSumm(summ, pay, select, event.target.value);
+    event.target.value !== '' && MonthPaymentSumm(summ, pay, select, event.target.value, swch.anuited);
 
     setTime(event.target.value === '' ? '' : Number(event.target.value))
   }
@@ -275,17 +277,47 @@ const Calculator = () => {
 
   const [ monthPaymentSumm, setMonthPaymentSumm ] = useState(0)
 
-  let MonthPaymentSumm = (summ, pay, select, time) => {
+  const [ qarz, setQarz ] = useState(0)
+  const [ foiz, setFoiz ] = useState(0)
 
+
+  const MonthPaymentSumm = (summ, pay, select, time, method) => {
+
+    summ = parseFloat(summ) * 1000000;
+    pay = parseFloat(pay);
+    select = parseFloat(select);
+    time = parseInt(time);
+
+    console.log(qarz, foiz)
+    console.log(method, 'method');
     console.log(summ, 'summ');
     console.log(pay, 'pay');
-    console.log(select, 'eldor');
+    console.log(select, 'select');
+    console.log(time, 'time');
 
-      summ = summ - (summ * (pay / 100))
+    summ = summ - (summ * (pay / 100))
+    
+    if(method === "anuited" || method === undefined ){
+      setMonthPaymentSumm(summ * ( (select / (time * 100)) + ((select / (time * 100)) / ( Math.pow((1 + (select / (time * 100))) , time) - 1 ))  ))
+      setQarz(monthPaymentSumm - summ * (select / (time * 100)) )
+      setFoiz(summ * (select / (time * 100)) )
 
-   var monthPaymentSumm = summ * ( (select / (time * 100)) + (select / (time * 100)) / ( Math.pow((1 + (select / (time * 100))) , time) - 1 )  )
+      console.log(monthPaymentSumm,'A__monthPaymentSumm');
+      console.log(qarz,'A__qarz');
+      console.log(foiz,'A__foiz');
+    }else{
+      setMonthPaymentSumm((summ / time) + (summ * (select / (time * 100))))
+      setQarz(summ / time )
+      setFoiz(summ * (select / (time * 100)) )
 
-    setMonthPaymentSumm(monthPaymentSumm)
+      console.log(monthPaymentSumm,'D__monthPaymentSumm');
+      console.log(qarz,'D__qarz');
+      console.log(foiz,'D__foiz');
+
+    }
+
+    
+
 
   };        
 
@@ -317,7 +349,7 @@ const Calculator = () => {
                       label="Qandat Kredit olishni istaysiz"
                       onChange={handleChangeSelect}
                     >
-                      <MenuItem value={'18'}>Avto Kredit</MenuItem>
+                      <MenuItem value={'24.9'}>Avto Kredit</MenuItem>
                       <MenuItem value={'20'}>Mikro Kredit</MenuItem>
                       <MenuItem value={'22'}>Chakana Kredit</MenuItem>
                       <MenuItem value={'24'}>Maishiy Kredit</MenuItem>
@@ -455,13 +487,13 @@ const Calculator = () => {
         </Left>
         <Right>
             <Card>
-                <Card.Pay>{Math.round(monthPaymentSumm * 1000000)} so'm</Card.Pay>
+                <Card.Pay>{Math.round(monthPaymentSumm)} so'm</Card.Pay>
                 <Card.Description>Oylik to'lov</Card.Description>
                 <Card.Pay>{select} %</Card.Pay>
                 <Card.Description>Foiz</Card.Description>
-                <Card.Pay>{1234} so'm</Card.Pay>
+                <Card.Pay>{Math.round(qarz)} so'm</Card.Pay>
                 <Card.Description>To'liq foizli to'lov</Card.Description>
-                <Card.Pay>{4321} so'm</Card.Pay>
+                <Card.Pay>{Math.round(monthPaymentSumm * time)} so'm</Card.Pay>
                 <Card.Description>Umumiy kredt miqdori</Card.Description>
                 <MyButton onClick={() => navigate( swch.anuited ? `/annuited__table` : `/differ__table` )} >To'lov tartibi</MyButton>
             </Card>

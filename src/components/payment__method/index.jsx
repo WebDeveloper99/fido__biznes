@@ -59,7 +59,7 @@ const PaymentMethod = () => {
             <StyledTableCell align="center">To'lovning umumiy miqdori</StyledTableCell>
           </TableRow>
         </TableHead>
-        <TableBody>
+        <TableBody style={{padding: '30px'}} >
           {rows.map((row) => (
             <StyledTableRow key={row.name}>
               <StyledTableCell component="th" scope="row">
